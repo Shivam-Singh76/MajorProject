@@ -1,0 +1,77 @@
+body{
+    font-family: "plus jakarta Sans",sans-serif !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+} 
+
+.fa-compass{
+    color: #fe424d;
+    font-size: 2rem;
+}
+.nav-link{
+    color: #222222 !important;
+}
+.f-info-link a{
+    text-decoration: none;
+    color: #222222;
+}
+.f-info-link a:hover{
+    text-decoration: underline;
+}
+.f-info-link,.f-info-socials,.f-info-brand{
+    vertical-align: middle;
+    width: 100%;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}
+.f-info-socials i{
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+.f-info{
+    text-align: center;
+    height: 5rem;
+    background-color: #ebebeb;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: space-evenly;
+}
+
+/* ===== CARD ===== */
+.listing-card{
+    border: none !important;
+    margin-bottom: 2rem;
+}
+
+.card-img-top{
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    transition: transform 0.4s ease;
+}
+
+/* ✅ Hover pe sirf image zoom hogi, title safe rahega */
+.listing-card:hover .card-img-top{
+    transform: scale(1.1);
+}
+
+.card-body{
+    padding: 0 !important;
+}
+.card-text{
+    font-weight: 400;
+}
+.listing-link{
+    text-decoration: none;
+}
+.add-btn{
+    background-color: #fe424d !important;
+}
+#ma{
+    height: 600px;
+    width: 80vh;
+
+}

@@ -1,0 +1,17 @@
+<%# Boilerplate layout use karta hai — navbar, footer automatically include hote hain %>
+<%- layout("/layouts/boilerplate") %>
+
+<div class="row">
+    <%# Error alert box — red color mein error message dikhata hai, center mein hota hai %>
+    <div class="alert alert-danger col-6 offset-3" role="alert">
+
+        <%# Warning icon — error ke saath triangle icon dikhata hai %>
+        <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Danger:">
+            <use xlink:href="#exclamation-triangle-fill"/>
+        </svg>
+
+        <%# Error ka message — ExpressError se aaya statusCode ka description dikhata hai %>
+        <h4 class="alert-heading"><%= message %></h4>
+
+    </div>
+</div>

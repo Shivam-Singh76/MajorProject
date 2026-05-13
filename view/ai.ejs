@@ -1,0 +1,117 @@
+<% layout('/layouts/boilerplate') %>
+
+<div class="container mt-4">
+  <h2 class="mb-4">AI Travel Features</h2>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-4" id="aiTabs">
+    <li class="nav-item">
+      <a class="nav-link active" data-bs-toggle="tab" href="#planner">Smart Trip Planner</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" href="#chat">Travel Chat Assistant</a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+
+    <!-- Trip Planner -->
+    <div class="tab-pane fade show active" id="planner">
+      <div class="card p-4">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Destination</label>
+            <input type="text" class="form-control" id="dest" placeholder="e.g. Goa, Manali, Paris">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Number of Days</label>
+            <input type="number" class="form-control" id="days" placeholder="e.g. 5">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Budget</label>
+            <select class="form-select" id="budget">
+              <option>Budget (₹1200-₹1500)</option>
+              <option>Mid-range (₹1500-₹2000)</option>
+              <option>Luxury (₹6000+)</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Travel Style</label>
+            <select class="form-select" id="style">
+              <option>Adventure</option>
+              <option>Relaxation</option>
+              <option>Cultural</option>
+              <option>Family</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary mt-3" onclick="generatePlan()">Generate Trip Plan</button>
+        <div id="plan-result" class="mt-3 p-3 bg-light rounded" style="display:none; white-space:pre-wrap;"></div>
+      </div>
+    </div>
+
+    <!-- Chat Assistant -->
+    <div class="tab-pane fade" id="chat">
+      <div class="card p-4">
+        <div id="chat-messages" style="height:350px; overflow-y:auto; margin-bottom:1rem;">
+          <div class="alert alert-info">Namaste! Ask me anything about travel destinations, visas, packing, or budgets!</div>
+        </div>
+        <div class="input-group">
+          <input type="text" class="form-control" id="user-input" placeholder="Ask about any destination..." onkeydown="if(event.key==='Enter') sendChat()">
+          <button class="btn btn-primary" onclick="sendChat()">Send</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let chatHistory = [];
+
+async function generatePlan() {
+  const dest = document.getElementById('dest').value.trim();
+  const days = document.getElementById('days').value;
+  const budget = document.getElementById('budget').value;
+  const style = document.getElementById('style').value;
+  if (!dest || !days) return alert("Please fill destination and days!");
+
+  const result = document.getElementById('plan-result');
+  result.style.display = 'block';
+  result.textContent = 'Generating your trip plan...';
+
+  const res = await fetch('/ai/trip-plan', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ destination: dest, days, budget, style })
+  });
+  const data = await res.json();
+  result.textContent = data.plan;
+}
+
+async function sendChat() {
+  const input = document.getElementById('user-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  const container = document.getElementById('chat-messages');
+  container.innerHTML += `<div class="d-flex justify-content-end mb-2"><div class="alert alert-primary py-2 px-3 mb-0">${msg}</div></div>`;
+  container.innerHTML += `<div class="d-flex mb-2" id="typing"><div class="alert alert-secondary py-2 px-3 mb-0">Typing...</div></div>`;
+  container.scrollTop = container.scrollHeight;
+
+  chatHistory.push({ role: 'user', content: msg });
+
+  const res = await fetch('/ai/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: chatHistory })
+  });
+  const data = await res.json();
+  chatHistory.push({ role: 'assistant', content: data.reply });
+
+  document.getElementById('typing').remove();
+  container.innerHTML += `<div class="d-flex mb-2"><div class="alert alert-secondary py-2 px-3 mb-0">${data.reply}</div></div>`;
+  container.scrollTop = container.scrollHeight;
+}
+</script>
