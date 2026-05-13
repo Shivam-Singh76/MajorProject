@@ -20,10 +20,6 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
-// ─────────────────────────────────────────────
-// DATABASE CONNECTION
-// ─────────────────────────────────────────────
-
 const dbUrl = process.env.ATLASDB;
 
 async function main() {
@@ -34,11 +30,7 @@ main()
     .then(() => console.log("Connected to DB ✅"))
     .catch((err) => console.log("DB Error ❌", err));
 
-// ─────────────────────────────────────────────
-// SESSION STORE
-// ─────────────────────────────────────────────
-
-const store = new MongoStore({           // ✅ new MongoStore
+const store = new MongoStore({
     mongoUrl: dbUrl,
     crypto: {
         secret: process.env.SECRET,
@@ -49,10 +41,6 @@ const store = new MongoStore({           // ✅ new MongoStore
 store.on("error", (err) => {
     console.log("Session Store Error ❌", err);
 });
-
-// ─────────────────────────────────────────────
-// SESSION CONFIG
-// ─────────────────────────────────────────────
 
 const sessionOption = {
     store,
@@ -65,10 +53,6 @@ const sessionOption = {
         httpOnly: true,
     },
 };
-
-// ─────────────────────────────────────────────
-// MIDDLEWARE SETUP
-// ─────────────────────────────────────────────
 
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(session(sessionOption));
@@ -94,10 +78,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// ─────────────────────────────────────────────
-// ROUTES
-// ─────────────────────────────────────────────
-
 app.get("/", (req, res) => {
     res.redirect("/listings");
 });
@@ -107,30 +87,19 @@ app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 app.use("/ai", aiRouter);
 
-// ─────────────────────────────────────────────
-// ERROR HANDLING
-// ─────────────────────────────────────────────
-
 app.all("*splat", (req, res, next) => {
     next(new ExpressError(404, "Page Not Found"));
 });
 
 app.use((err, req, res, next) => {
+    if (res.headersSent) {
+        return next(err);
+    }
     let { statusCode = 500, message = "Something went wrong" } = err;
     res.status(statusCode).render("error.ejs", { message });
 });
 
-// ─────────────────────────────────────────────
-// SERVER START
-// ─────────────────────────────────────────────
-
-// ✅ Change to this
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Server is listening to port ${PORT}`);
 });
-
-
-
-
-
